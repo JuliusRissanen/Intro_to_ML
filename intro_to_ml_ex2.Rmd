@@ -92,7 +92,7 @@ persp(lin_discr)
 ```
 
 
-## 3)
+## Problem 3
 
 ### A)
 
@@ -106,4 +106,4 @@ Hgen maximizes joint likelihood p(x,y)
 Hdis maximizes exact conditional likelihood p(y|x)
 
 Continuous p(xi|y) is normal distribution
-Discrete p(xi|y)
+Discrete p(xi|y) is bernoulli
