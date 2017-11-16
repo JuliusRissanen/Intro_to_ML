@@ -30,7 +30,7 @@ college <- read.csv("c:/Users/Julius/yliopisto/tietojenkäsittely tiede/Intro_to_
 ### B) look at the data
 
 ```{r}
-head(college)
+head(college) #instead of fix because nicer output
 ```
 
 ### C) Summary and pairs plots
