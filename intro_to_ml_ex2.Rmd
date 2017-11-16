@@ -107,3 +107,11 @@ Hdis maximizes exact conditional likelihood p(y|x)
 
 Continuous p(xi|y) is normal distribution
 Discrete p(xi|y) is bernoulli
+
+Generative-Discriminative pairs:
+1. Discriminant analysis v. logistic regression
+2. Naive Bayes v Logistic regression
+
+### C)
+
+Generative classifiers (NB and Discrim. an.) initially decrease errorate faster. Logistic regression has smaller error rate with higher samples. (confirming a. answer (introduction )
