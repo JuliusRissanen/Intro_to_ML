@@ -1,0 +1,213 @@
+---
+title: "Intro to ML ex1"
+author: "Julius Rissanen"
+date: "16 marraskuuta 2017"
+output: html_document
+---
+
+# Exercises 1
+
+load packages and set seed for random number generators
+```{r, error = F, warning = F, message= F}
+set.seed(123)
+library(dplyr)
+library(magrittr)
+library(ggplot2)
+library(tidyr)
+```
+
+
+## Problem2
+
+Exercise 8 from p.54 from the book
+
+### A) Read data
+
+```{r}
+college <- read.csv("c:/Users/Julius/yliopisto/tietojenkäsittely tiede/Intro_to_ML/College.csv", stringsAsFactors = F, row.names = 1)
+```
+
+### B) look at the data
+
+```{r}
+head(college)
+```
+
+### C) Summary and pairs plots
+```{r}
+# i) summary
+summary(college)
+
+# ii)
+pairs(college[,2:11])
+
+# iii) boxplot
+boxplot(college$Outstate~college$Private, xlab = "Private", ylab = "Outstate")
+
+# iv)
+Elite <- rep("No", nrow(college))
+Elite[college$Top10perc > 50] <- "Yes"
+Elite <- as.factor(Elite)
+college <- data.frame(college, Elite)
+summary(college$Elite)
+plot(college$Outstate ~ college$Elite, xlab = "Elite", ylab = "Outstate" )
+
+#v explore hist
+par(mfrow = c(2,2))
+hist(college$Outstate, col = 'blue', breaks = 5)
+hist(college$Outstate, col = 'grey', breaks = 10)
+hist(college$Outstate, col = 'red', breaks = 50)
+hist(college$Outstate, col = 'yellow', breaks = 100)
+```
+
+## Problem 3
+
+### A)
+```{r}
+set.seed(123)
+
+#set sample size to 30
+sample_size <- 30
+
+#sample from uniform [-3,3] 30 times
+x <- runif(sample_size, -3 ,3)
+
+# define target function
+y <- 2 + x - .5 * x^2 + rnorm(sample_size, 0, 0.4)
+
+#make our train dataset from sampled variables
+train <- data.frame(x,y)
+
+# a)
+#Define some helping variables:
+
+# Max polynomic function degree
+K <- 10
+#MSE variable
+MSE <- NA
+#List of models
+models_list <- list(NA)
+
+# Poly() function cannot handle 0 model so we do it by hand
+model0<- lm(y ~ 1, data = train)
+
+#Plot the function
+ggplot(data = train, 
+       aes(x = x, y = y)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              formula = y ~ 1,
+              se = F,
+              color = 11)
+
+#save MSE-value from the Model0 to MSE-variable
+MSE[1] <- mean(residuals(model0)^2)
+
+# fit polynomials of order 1-10 inside for-loop
+
+for(i in 1:K) {
+#run the model
+  models_list[[i]] <- lm(y ~ poly(x,i), data = train)
+  
+  #print the GGplot
+  plot <- ggplot(data = train, aes(x = x, y = y)) +
+    geom_point() +
+    geom_smooth(data    = train,method = "lm",
+                formula = y ~ poly(x, i),
+                se      = F,
+                color   = i) +
+    ggtitle(paste("Polynomial of ", i))
+  
+  print(plot)
+  
+  #save the MSE from the model
+  MSE[i+1] <- mean(residuals(models_list[[i]])^2)
+}
+
+# MSE values and plot
+MSE
+ggplot(as.data.frame(MSE), aes(x = 0:10, y = MSE)) +
+  geom_line() +
+  xlab("Polynomial degree: constant to 10")
+```
+
+
+MSE goes lower after every extra polynomial.
+
+### B)
+
+```{r}
+# create test data
+test_sampleSize <- 1000
+x <- runif(test_sampleSize, -3 ,3)
+y <- 2 + x - .5 * x^2 + rnorm(test_sampleSize, 0, 0.4)
+test <- data.frame(x,y)
+
+# Test data MSE
+test_MSE <- numeric(K+1)
+test_MSE[1] <- mean((mean(train$y) - test$y)^2) # constant model (K = 0)
+
+for(i in 1:K) {
+  test_MSE[i+1] <- mean((predict(models_list[[i]], newdata = test) - test$y)^2)
+}
+
+#I combine train and test MSE to make it work better
+both_MSE <- as.data.frame(t(rbind(MSE, test_MSE)))
+both_MSE <- gather(both_MSE, data, value, MSE:test_MSE) #wide to long format
+both_MSE$data[both_MSE$data == "MSE"] <- "train_MSE" #labels correctly
+both_MSE$poly_degree <- 0:10 #denote degree variable
+
+#Plot MSE
+ggplot(both_MSE, aes(x = poly_degree, y = value, color = data)) +
+  geom_line() +
+  scale_x_continuous(breaks = 0:10)
+```
+
+MSE decreases very fast untill degree 2 and after that test MSE starts to rise slowly and training MSE goes
+slower slowly.
+
+### C)
+
+```{r}
+# 10-fold cross-validation
+# K to determine how many folds we want
+k <- 10
+
+# sum of squared errors
+SSE <- numeric(K+1)
+
+#Randomly shuffle the data (not sure if necessary)
+train<-train[sample(nrow(train)),]
+
+#Create 10 folds
+folds <- cut(seq(1,nrow(train)),breaks=k,labels=FALSE)
+
+#Perform 10 fold cross validation
+for(i in 1:10){
+  #Segment your data by fold using the which() function
+  testIndexes <- which(folds==i,arr.ind=TRUE)
+  testData <- train[testIndexes, ]
+  trainData <- train[-testIndexes, ]
+
+    #Again degree 0 polynomial is different
+  SSE[1] <- SSE[1] + sum((mean(trainData$y) - testData$y)^2)
+
+  #loop over 10 polynomials using our training and test data for the folds
+
+  for(i in 1:K) {
+    model <- lm(y ~ poly(x,i), data = trainData)
+    SSE[i+1] <- SSE[i+1] + sum((predict(model, newdata = testData) - testData$y)^2)
+  }
+}
+
+SSE <- as.data.frame(SSE)
+#variable which shows which polynomial is each row
+SSE$polynomial_degree <- 0:10
+ggplot(SSE, aes(x = polynomial_degree, 
+                y = SSE)) +
+  geom_line() +
+  scale_x_continuous(breaks = 0:10)
+```
+
+Cross validation error decreases untill polynomial degree is 2 then it starts to increase. SSE increases faster
+after K=2. Cross validation and SSe seems to be better way to asses reliability of the model
