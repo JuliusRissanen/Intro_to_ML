@@ -48,7 +48,7 @@ Simulated samples seem to be relatively similar to our manually calculated
 ```{r}
 plot(x_sim, col = "blue")
 density <- kde2d(x_sim$x1, x_sim$x2)
-par(mfrow = c(2,2))
+
 contour(density)
 image(density)
 persp(density)
@@ -68,7 +68,7 @@ density_function <- function(x, means, sigma) {
 grid <- expand.grid(0.25 * (-20:20), 0.25*(-20:20)) # create grid
 grid_density <- density_function(grid, means, sigma) # apply density function
 grid_matrix <- matrix(grid_density, nrow = 41) # density to 41x41 matrix
-par(mfrow = c(2,2))
+
 contour(grid_matrix) #plot
 image(grid_matrix) #plot
 persp(grid_matrix) #plot
@@ -86,9 +86,24 @@ grid_matrix2 <- matrix(grid_density2, nrow = 41) # transform it to matrix 41x41
 
 lin_discr<- ( grid_matrix*(1/2) )/( (grid_matrix * (1/2)) + (grid_matrix2 * (1/2)) ) #calculate linear discriminant which is also the posterior
 
-par(mfrow = c(2,2))
 contour(lin_discr)
 image(lin_discr)
 persp(lin_discr)
 ```
 
+
+## 3)
+
+### A)
+
+Discriminative considered traditionally better because of asymptotically lower error rate.
+
+Generative can be better at small samples because it coverges faster to it's asymptotic error rate
+
+### B)
+
+Hgen maximizes joint likelihood p(x,y)
+Hdis maximizes exact conditional likelihood p(y|x)
+
+Continuous p(xi|y) is normal distribution
+Discrete p(xi|y)
