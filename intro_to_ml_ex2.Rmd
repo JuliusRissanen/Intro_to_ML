@@ -1,0 +1,91 @@
+---
+title: "Intro to ML exercises2"
+author: "Julius Rissanen"
+date: "14 marraskuuta 2017"
+output: html_document
+---
+#Exercises 2
+
+load packages and set seed for random number generators
+```{r, error = F, warning = F, message= F}
+set.seed(123)
+library(dplyr)
+library(magrittr)
+library(ggplot2)
+library(MASS)
+```
+
+
+##Problem 1
+
+### A)
+
+Let's start by defining the covariance matrix 2X2. X1 has 2.0 variance and X2 has 3.0 variance. Correlation(X1,X2) is -0.75
+
+```{r}
+x1 <- 2
+x2 <- 3
+corrX1X2 <- -0.75
+
+covX1X2 <- sqrt(x1*x2) * corrX1X2 #covariance formula is solved from the formula given in problem
+
+sigma <- matrix(c(x1,covX1X2,covX1X2, x2), ncol = 2) #define 'sigma' which is covariance matrix
+sigma #print it out to check if it looks correct
+
+#Then we need to simulate 200 points from the normal distribution and compare empirical to manual
+n <- 200
+means <- c(0,0) #variables are mean zero
+x_sim <- as.data.frame(mvrnorm(n = n, mu = means, sigma))
+colnames(x_sim) <- c("x1", "x2")
+cov(x_sim) #covariance matrix
+cor(x_sim) #correlation matrix
+```
+
+Simulated samples seem to be relatively similar to our manually calculated
+
+
+### B)
+```{r}
+plot(x_sim, col = "blue")
+density <- kde2d(x_sim$x1, x_sim$x2)
+contour(density)
+image(density)
+persp(density)
+```
+
+### C)
+
+I start by creating function which can calculate density (from the lecture/book)
+
+```{r}
+density_function <- function(x, means, sigma) {
+  p_components <- length(means) # save the amount of components
+  brackets <- apply(x,1, function(values) (values-means) %*% solve(sigma) %*% (values-means)) #separate last part
+  1 / ((2*pi)^(p_components/2) * sqrt(det(sigma)) ) * exp(-1/2*(brackets)) # calculate density
+}
+
+grid <- expand.grid(0.25 * (-20:20), 0.25*(-20:20)) # create grid
+grid_density <- density_function(grid, means, sigma) # apply density function
+grid_matrix <- matrix(grid_density, nrow = 41) # density to 41x41 matrix
+contour(grid_matrix) #plot
+image(grid_matrix) #plot
+persp(grid_matrix) #plot
+```
+
+
+### D)
+
+```{r}
+mu1 <- means # save old means vector to mu1
+mu2 <- c(2,1) #create new means vector mu2
+
+grid_density2 <- density_function(grid, mu2, sigma) # apply density function again with new mu2
+grid_matrix2 <- matrix(grid_density2, nrow = 41) # transform it to matrix 41x41
+
+lin_discr<- ( grid_matrix*(1/2) )/( (grid_matrix * (1/2)) + (grid_matrix2 * (1/2)) ) #calculate linear discriminant which is also the posterior
+
+contour(lin_discr)
+image(lin_discr)
+persp(lin_discr)
+```
+
