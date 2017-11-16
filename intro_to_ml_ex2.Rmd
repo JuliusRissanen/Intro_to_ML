@@ -103,7 +103,7 @@ Generative can be better at small samples because it coverges faster to it's asy
 ### B)
 
 Hgen maximizes joint likelihood p(x,y)
-Hdis maximizes exact conditional likelihood p(y|x)
+Hdis maximizes exact conditional likelihood p(y|x) (posterior)
 
 Continuous p(xi|y) is normal distribution
 Discrete p(xi|y) is bernoulli
