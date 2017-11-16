@@ -212,3 +212,5 @@ ggplot(SSE, aes(x = polynomial_degree,
 
 Cross validation error decreases untill polynomial degree is 2 then it starts to increase. SSE increases faster
 after K=2. Cross validation and SSe seems to be better way to asses reliability of the model.
+
+UTF-8 forced
