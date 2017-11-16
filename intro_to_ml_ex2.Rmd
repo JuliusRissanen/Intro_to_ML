@@ -102,14 +102,18 @@ Generative can be better at small samples because it coverges faster to it's asy
 
 ### B)
 
-Hgen maximizes joint likelihood p(x,y)
-Hdis maximizes exact conditional likelihood p(y|x) (posterior)
+Hgen maximizes joint likelihood p(x,y).
 
-Continuous p(xi|y) is normal distribution
+Hdis maximizes exact conditional likelihood p(y|x) (posterior).
+
+Continuous p(xi|y) is normal distribution.
+
 Discrete p(xi|y) is bernoulli
 
 Generative-Discriminative pairs:
+
 1. Discriminant analysis v. logistic regression
+
 2. Naive Bayes v Logistic regression
 
 ### C)
