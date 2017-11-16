@@ -24,7 +24,7 @@ Exercise 8 from p.54 from the book
 ### A) Read data
 
 ```{r}
-college <- read.csv("c:/Users/Julius/yliopisto/tietojenkäsittely tiede/Intro_to_ML/College.csv", stringsAsFactors = F, row.names = 1)
+college <- read.csv("c:/Users/Julius/yliopisto/tietojenkÃ¤sittely tiede/Intro_to_ML/College.csv", stringsAsFactors = F, row.names = 1)
 ```
 
 ### B) look at the data
