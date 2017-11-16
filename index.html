@@ -154,18 +154,19 @@ $(document).ready(function () {
 <hr />
 <div id="exercises-1" class="section level1">
 <h1>Exercises 1</h1>
-<p>load packages and set seed for random number generators</p>
+<p>Load packages and set seed for random number generators</p>
 <pre class="r"><code>set.seed(123)
 library(dplyr)
 library(magrittr)
 library(ggplot2)
-library(tidyr)</code></pre>
+library(tidyr)
+setwd(&quot;C:/Users/Julius/yliopisto/tietojenkasittely tiede/Intro_to_ML&quot;)</code></pre>
 <div id="problem2" class="section level2">
 <h2>Problem2</h2>
 <p>Exercise 8 from p.54 from the book</p>
 <div id="a-read-data" class="section level3">
 <h3>A) Read data</h3>
-<pre class="r"><code>college &lt;- read.csv(&quot;c:/Users/Julius/yliopisto/tietojenkäsittely tiede/Intro_to_ML/College.csv&quot;, stringsAsFactors = F, row.names = 1)</code></pre>
+<pre class="r"><code>college &lt;- read.csv(&quot;College.csv&quot;, stringsAsFactors = F, row.names = 1)</code></pre>
 </div>
 <div id="b-look-at-the-data" class="section level3">
 <h3>B) look at the data</h3>
